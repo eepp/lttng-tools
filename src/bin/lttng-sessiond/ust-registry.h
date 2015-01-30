@@ -133,6 +133,7 @@ struct ust_registry_event {
 	size_t nr_fields;
 	struct ustctl_field *fields;
 	char *model_emf_uri;
+	char *format;
 	/*
 	 * Flag for this channel if the metadata was dumped once during
 	 * registration. 0 means no, 1 yes.
@@ -231,8 +232,8 @@ void ust_registry_session_destroy(struct ust_registry_session *session);
 int ust_registry_create_event(struct ust_registry_session *session,
 		uint64_t chan_key, int session_objd, int channel_objd, char *name,
 		char *sig, size_t nr_fields, struct ustctl_field *fields, int loglevel,
-		char *model_emf_uri, int buffer_type, uint32_t *event_id_p,
-		struct ust_app *app);
+		char *model_emf_uri, char *format, int buffer_type,
+		uint32_t *event_id_p, struct ust_app *app);
 struct ust_registry_event *ust_registry_find_event(
 		struct ust_registry_channel *chan, char *name, char *sig);
 void ust_registry_destroy_event(struct ust_registry_channel *chan,
@@ -289,7 +290,8 @@ static inline
 int ust_registry_create_event(struct ust_registry_session *session,
 		uint64_t chan_key, int session_objd, int channel_objd, char *name,
 		char *sig, size_t nr_fields, struct ustctl_field *fields, int loglevel,
-		char *model_emf_uri, int buffer_type, uint32_t *event_id_p)
+		char *model_emf_uri, char *format, int buffer_type,
+		uint32_t *event_id_p)
 {
 	return 0;
 }

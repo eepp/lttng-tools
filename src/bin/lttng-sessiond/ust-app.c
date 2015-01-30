@@ -4792,7 +4792,7 @@ error_rcu_unlock:
  */
 static int add_event_ust_registry(int sock, int sobjd, int cobjd, char *name,
 		char *sig, size_t nr_fields, struct ustctl_field *fields, int loglevel,
-		char *model_emf_uri)
+		char *model_emf_uri, char *format)
 {
 	int ret, ret_code;
 	uint32_t event_id = 0;
@@ -4813,6 +4813,7 @@ static int add_event_ust_registry(int sock, int sobjd, int cobjd, char *name,
 		free(sig);
 		free(fields);
 		free(model_emf_uri);
+		free(format);
 		goto error_rcu_unlock;
 	}
 
@@ -4824,6 +4825,7 @@ static int add_event_ust_registry(int sock, int sobjd, int cobjd, char *name,
 		free(sig);
 		free(fields);
 		free(model_emf_uri);
+		free(format);
 		goto error_rcu_unlock;
 	}
 
@@ -4842,13 +4844,13 @@ static int add_event_ust_registry(int sock, int sobjd, int cobjd, char *name,
 	pthread_mutex_lock(&registry->lock);
 
 	/*
-	 * From this point on, this call acquires the ownership of the sig, fields
-	 * and model_emf_uri meaning any free are done inside it if needed. These
-	 * three variables MUST NOT be read/write after this.
+	 * From this point on, this call acquires the ownership of the sig,
+	 * fields, model_emf_uri, and format meaning any free are done inside
+	 * it if needed. These four variables MUST NOT be read/write after this.
 	 */
 	ret_code = ust_registry_create_event(registry, chan_reg_key,
 			sobjd, cobjd, name, sig, nr_fields, fields, loglevel,
-			model_emf_uri, ua_sess->buffer_type, &event_id,
+			model_emf_uri, format, ua_sess->buffer_type, &event_id,
 			app);
 
 	/*
@@ -4906,14 +4908,15 @@ int ust_app_recv_notify(int sock)
 	case USTCTL_NOTIFY_CMD_EVENT:
 	{
 		int sobjd, cobjd, loglevel;
-		char name[LTTNG_UST_SYM_NAME_LEN], *sig, *model_emf_uri;
+		char name[LTTNG_UST_SYM_NAME_LEN], *sig, *model_emf_uri,
+			*format;
 		size_t nr_fields;
 		struct ustctl_field *fields;
 
 		DBG2("UST app ustctl register event received");
 
 		ret = ustctl_recv_register_event(sock, &sobjd, &cobjd, name, &loglevel,
-				&sig, &nr_fields, &fields, &model_emf_uri);
+				&sig, &nr_fields, &fields, &model_emf_uri, &format);
 		if (ret < 0) {
 			if (ret != -EPIPE && ret != -LTTNG_UST_ERR_EXITING) {
 				ERR("UST app recv event failed with ret %d", ret);
@@ -4925,12 +4928,12 @@ int ust_app_recv_notify(int sock)
 
 		/*
 		 * Add event to the UST registry coming from the notify socket. This
-		 * call will free if needed the sig, fields and model_emf_uri. This
-		 * code path loses the ownsership of these variables and transfer them
-		 * to the this function.
+		 * call will free if needed the sig, fields, model_emf_uri, and
+		 * format. This code path loses the ownsership of these
+		 * variables and transfer them to the this function.
 		 */
 		ret = add_event_ust_registry(sock, sobjd, cobjd, name, sig, nr_fields,
-				fields, loglevel, model_emf_uri);
+				fields, loglevel, model_emf_uri, format);
 		if (ret < 0) {
 			goto error;
 		}

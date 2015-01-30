@@ -348,6 +348,14 @@ int ust_metadata_event_statedump(struct ust_registry_session *session,
 			goto end;
 	}
 
+	if (event->format) {
+		// TODO: escape control characters from event->format
+		ret = lttng_metadata_printf(session, "\tformat = \"%s\";\n",
+			event->format);
+		if (ret)
+			goto end;
+	}
+
 #if 0 /* context for events not supported */
 	if (event->ctx) {
 		ret = lttng_metadata_printf(session,
