@@ -168,6 +168,13 @@ _lttng() {
       return 1
     fi
 
+    # check for running root session daemon before listing
+    # kernel events
+    if [[ $domain = k ]] && (( ! $root_sessiond_running )); then
+      _message 'root session daemon is not running'
+      return 1
+    fi
+
     # get channel
     local channel=''
 
