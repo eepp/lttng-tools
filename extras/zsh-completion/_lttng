@@ -431,6 +431,19 @@ _lttng() {
     echo -n "$session"
   }
 
+  # session adjective from status
+  _session_adj_from_status() {
+    local ajd=''
+
+    case "$1" in
+      all) ajd='available';;
+      true) ajd='active';;
+      false) ajd='inactive';;
+    esac
+
+    echo -n "$ajd"
+  }
+
   # list available sessions with given status (true, false, or all)
   _list_sessions_with_status() {
     local ignore_current=0 cur_session
@@ -464,7 +477,7 @@ _lttng() {
     fi
 
     # append one session at a time
-    local -a sessions
+    local -a sessions statuses
 
     for i ({1..$sessions_count}); do
       local session_xml="$(_session_at_from_xml "$sessions_xml" $i)"
@@ -485,38 +498,65 @@ _lttng() {
         fi
       fi
 
+      local session_status="$(_status_from_xml "$session_xml" session)"
+
+      if (( $? != 0 )); then
+        continue
+      fi
+
       if [[ $wanted_status != 'all' ]]; then
-        local session_status="$(_status_from_xml "$session_xml" session)"
-
-        if (( $? != 0 )); then
-          continue
-        fi
-
         if [[ $session_status != $wanted_status ]]; then
           continue
         fi
       fi
 
       sessions+=("$session")
+      statuses+=("$session_status")
     done
 
     # adjective
-    local adjective
-
-    case $wanted_status in
-      all) adjective='available';;
-      true) adjective='active';;
-      false) adjective='inactive';;
-    esac
+    local adjective="$(_session_adj_from_status "$wanted_status")"
 
     if (( ${#sessions} == 0 )); then
       _message "no $adjective tracing sessions found"
       return 1
     fi
 
+    # compute maximum length of session names
+    local max=0
+
+    for session in $sessions; do
+      local len=$#session
+
+      if (( $len > $max )); then
+        max=$len
+      fi
+    done
+
+    local max_possible=$(( $COLUMNS - 13 ))
+
+    if (( $max > $max_possible )); then
+      max=$max_possible
+    fi
+
+    # create display strings
+    local -a disp
+
+    for i ({1..${#sessions}}); do
+      session="${sessions[$i]}"
+      session_status="${statuses[$i]}"
+
+      echo "$session_status" >> /tmp/debug
+
+      local disp_adj="$(_session_adj_from_status "$session_status")"
+      local disp_session="${(r:$max:: :)session}"
+
+      disp+=("$disp_session  [$disp_adj]")
+    done
+
     local expl
-    _description values expl "$adjective tracing session"
-    compadd "$expl[@]" -a - sessions
+    _description tracing-sessions expl "$adjective tracing session"
+    compadd "$expl[@]" -d disp -l -a - sessions
   }
 
   # list channels of a given session (-s, --session) for the given
