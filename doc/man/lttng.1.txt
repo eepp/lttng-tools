@@ -231,6 +231,18 @@ man:lttng-untrack(1)::
     {cmd_descr_untrack}.
 
 
+Triggers
+~~~~~~~~
+man:lttng-add-trigger(1)::
+    {cmd_descr_add_trigger}.
+
+man:lttng-remove-trigger(1)::
+    {cmd_descr_remove_trigger}.
+
+man:lttng-list-triggers(1)::
+    {cmd_descr_list_triggers}.
+
+
 Miscellaneous
 ~~~~~~~~~~~~~
 man:lttng-help(1)::

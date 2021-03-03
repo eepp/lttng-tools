@@ -426,6 +426,7 @@ _AC_DEFINE_AND_SUBST([DEFAULT_EVENT_NOTIFIER_ERROR_COUNT_MAP_SIZE], [4096])
 
 # Command short descriptions
 _AC_DEFINE_QUOTED_AND_SUBST([CMD_DESCR_ADD_CONTEXT], [Add context fields to a channel])
+_AC_DEFINE_QUOTED_AND_SUBST([CMD_DESCR_ADD_TRIGGER], [Add triggers])
 _AC_DEFINE_QUOTED_AND_SUBST([CMD_DESCR_CREATE], [Create a tracing session])
 _AC_DEFINE_QUOTED_AND_SUBST([CMD_DESCR_CLEAR], [Clear a tracing session])
 _AC_DEFINE_QUOTED_AND_SUBST([CMD_DESCR_DESTROY], [Tear down tracing sessions])
@@ -437,8 +438,10 @@ _AC_DEFINE_QUOTED_AND_SUBST([CMD_DESCR_ENABLE_EVENT], [Create or enable event ru
 _AC_DEFINE_QUOTED_AND_SUBST([CMD_DESCR_ENABLE_ROTATION], [Set a rotation schedule])
 _AC_DEFINE_QUOTED_AND_SUBST([CMD_DESCR_HELP], [Display help information about a command])
 _AC_DEFINE_QUOTED_AND_SUBST([CMD_DESCR_LIST], [List tracing sessions, domains, channels, and events])
+_AC_DEFINE_QUOTED_AND_SUBST([CMD_DESCR_LIST_TRIGGERS], [List triggers])
 _AC_DEFINE_QUOTED_AND_SUBST([CMD_DESCR_LOAD], [Load tracing session configurations])
 _AC_DEFINE_QUOTED_AND_SUBST([CMD_DESCR_REGENERATE], [Manage an LTTng tracing session's data regeneration])
+_AC_DEFINE_QUOTED_AND_SUBST([CMD_DESCR_REMOVE_TRIGGER], [Remove triggers])
 _AC_DEFINE_QUOTED_AND_SUBST([CMD_DESCR_ROTATE], [Archive a tracing session's current trace chunk])
 _AC_DEFINE_QUOTED_AND_SUBST([CMD_DESCR_SAVE], [Save tracing session configurations])
 _AC_DEFINE_QUOTED_AND_SUBST([CMD_DESCR_SET_SESSION], [Set current tracing session])

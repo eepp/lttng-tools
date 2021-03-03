@@ -308,6 +308,11 @@ static void show_basic_help(void)
 	puts("  track             " CONFIG_CMD_DESCR_TRACK);
 	puts("  untrack           " CONFIG_CMD_DESCR_UNTRACK);
 	puts("");
+	puts("Triggers:");
+	puts("  add-trigger       " CONFIG_CMD_DESCR_ADD_TRIGGER);
+	puts("  remove-trigger    " CONFIG_CMD_DESCR_REMOVE_TRIGGER);
+	puts("  list-triggers     " CONFIG_CMD_DESCR_LIST_TRIGGERS);
+	puts("");
 	puts("Miscellaneous:");
 	puts("  help              " CONFIG_CMD_DESCR_HELP);
 	puts("  version           " CONFIG_CMD_DESCR_VERSION);
