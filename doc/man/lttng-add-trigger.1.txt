@@ -1,198 +1,291 @@
 lttng-add-trigger(1)
-=====================
-:revdate: 27 May 2020
+====================
+:revdate: 5 March 2021
 
 
 NAME
 ----
-lttng-add-trigger - Create LTTng triggers
+lttng-add-trigger - Add LTTng triggers
 
 
 SYNOPSIS
 --------
-
 [verse]
-*lttng* ['linkgenoptions:(GENERAL OPTIONS)'] *add-trigger* [--id ID]
-      [--fire-every N] [--fire-once-after N]
-      --condition CONDITION-NAME CONDITION-ARGS
-      --action ACTION-NAME ACTION-ARGS
-      [--action ACTION-NAME ACTION-ARGS]...
-
+*lttng* ['linkgenoptions:(GENERAL OPTIONS)'] *add-trigger* [option:--id='ID'] [option:--user-id='UID']
+      [option:--fire-every='N' | option:--fire-once-after='M']
+      option:--condition='CTYPE' ['CARGS']
+      option:--action='ATYPE' ['AARGS'] [option:--action='ATYPE' ['AARGS']]...
 
 DESCRIPTION
 -----------
+The `lttng add-trigger` command creates and adds an LTTng _trigger_ to
+the session daemon (see man:lttng-sessiond(8)).
 
-The `lttng add-trigger` command is used to create triggers.  A
-trigger is an association between a *condition* and one or more
-*actions*.  When the condition associated to a trigger is met, the
-actions associated to that trigger are executed.  The tracing does not
-have to be active for the conditions to be met, and triggers are
-independent from tracing sessions.
+A trigger is an association between a _condition_ and one or more
+_actions_. When the condition of a trigger _T_ is satisfied, LTTng
+executes the actions of _T_.
 
-By default, a trigger fires every time its condition is met.  The
-'--fire-every' and '--fire-once-after' options can be used to change
-this mode.
+A tracing session doesn't need to be active (see man:lttng-start(1)) for
+the condition of a trigger to be satisfied.
 
-The syntax by which conditions and actions are specified is described
-below.
+A trigger doesn't belong to a specific tracing session: it's global to
+the session daemon. Within the session daemon, a trigger has a unique ID
+(a string). By default, the `add-trigger` command automatically assigns
+an ID to the added trigger. Use the option:--id option to assign a
+specific ID instead.
 
-[[conditions]]
-Conditions
-~~~~~~~~~~
+With the `add-trigger` command, you add a trigger within the scope of
+your Unix user. If your Unix user is `root`, you can add the trigger as
+another user with the option:--user-id option.
 
-Conditions are specified with the `--condition` option, followed by a
-condition name, and possibly some more arguments, depending on the
-specific condition.  There must be exactly one condition given in the
-`lttng add-trigger` invocation.
+By default, LTTng executes the actions of a trigger each time its
+condition is satisfied. Use the option:--fire-every or
+option:--fire-once-after option to override this default behaviour.
 
-The available conditions are:
+With the `add-trigger` command, you specify the condition of the trigger
+to add with a <<cond-spec,condition specifier>> and its actions with one
+or more <<action-spec,action specifiers>>.
 
-Event rule: `on-event [event rule arguments]`::
-    This type of condition is met when the tracer encounters an event
-    matching the given even rule.  The arguments describing the event
-    rule are the same as those describing the event rules of the
-    man:lttng-enable-event(1) command, with these exceptions:
+Use the man:lttng-list-triggers(1) command to list the available
+triggers for your Unix user (or for all users if your Unix user is
+`root`).
 
-    - It is not possible to use filter operands that use values from
-      the context.
+Use the man:lttng-remove-trigger(1) command to remove an existing
+trigger.
 
+[[cond-spec]]
+Condition specifier
+~~~~~~~~~~~~~~~~~~~
+Synopsis:
+
+[verse]
+option:--condition='CTYPE' ['CARGS']
+
+A condition specifier is the option:--condition option, which specifies
+the type of condition 'CTYPE', followed, depending on 'CTYPE', with zero
+or more arguments 'CARGS'.
+
+The available condition types are:
+
+[[on-event-cond-spec]]Event rule match::
+    Synopsis:
 +
-Fields to capture can be specified with the option:--capture option, followed by
-a capture expression. Zero or more captures can be configured. See the
-<<capture-expr, Capture expression>> section below for more information.
-
-[[actions]]
-Actions
-~~~~~~~
-
-Actions are specified with the `--action` option, followed by an action
-name, and possibly some more arguments, depending on the specific
-action.  There must be at least one action given in the
-`lttng add-trigger` invocation.
-
-The available actions are:
-
-Notify: *notify*::
-    This action causes the LTTng session daemon to send a notification,
-    through its notification mechanism (see man:lttng-sessiond(8)).
-    Some details about the condition evaluation are sent along with the
-    notification.
-
-Start session: *start-session* session-name::
-    This action causes the LTTng session daemon to start tracing for the
-    session with the given name.  If no session with the given name exist
-    at the time the condition is met, nothing is done.
-
-Stop session: *stop-session* session-name::
-    This action causes the LTTng session daemon to stop tracing for the
-    session with the given name.  If no session with the given name exist
-    at the time the condition is met, nothing is done.
-
-Rotate session: *rotate-session* session-name::
-    This action causes the LTTng session daemon to rotate the session
-    with the given name.  See  man:lttng-rotate(1) for more information
-    about the session rotation concept.  If no session with the given
-    name exist at the time the condition is met, nothing is done.
-
-Snapshot session: *snapshot-session* session-name::
-    This action causes the LTTng session daemon to take a snapshot of the
-    session with the given name.  See man:lttng-snapshot(1) for more
-    information about the session snapshot concept.  If no session with
-    the given name exist at the time the condition is met, nothing is
-    done.
+[verse]
+option:--condition=`on-event` [nloption:--capture='CDESCR']... 'ERARGS'
++
+An `on-event` condition is considered satisfied when an event occurs and
+matches the event rule specified with 'ERARGS'.
++
+'ERARGS' is what the man:lttng-enable-event(1) command expects, except
+that you may :not: use a filter operand (see the command's
+nloption:--filter option) which starts with `$ctx` or `$app`.
++
+Capture event record and context fields with one or more
+nloption:--capture options (see the <<capture-descr,Capture descriptor>>
+section below to learn more). When an `on-event` condition with capture
+descriptors is satisfied, the captured field values are available in the
+evaluation object of the condition using the liblttng-ctl C{nbsp}API.
++
+NOTE: Make sure to **single-quote** 'CDESCR' when running the command
+from a shell, as capture descriptors can include characters having a
+special meaning for most shells.
 
 
-[[capture-expr]]
-Capture expression
+[[capture-descr]]
+Capture descriptor
 ~~~~~~~~~~~~~~~~~~
+A capture descriptor is a textual expression which describes how to read
+an event record or context field.
 
-A capture expression can be specified with the option:--capture option when
-creating a new on-event condition. If the capture expression corresponds with an
-event's field when tracing, the runtime dynamic value corresponding to the
-capture expression is captured.
+The argument of a nloption:--capture option, when using an
+<<on-event-cond-spec,event rule match condition specifier>>
+(`on-event`), is a capture descriptor.
 
-NOTE: Make sure to **single-quote** the capture expression when running
-the command from a shell, as capture expressions typically include
-characters having a special meaning for most shells.
+A capture descriptor expression is one of:
 
-* Supported field types:
- - integer,
- - unsigned integer,
- - floating point value,
- - fixed-size array of integers,
- - variable-size array of integers (sequence),
- - enumeration,
- - text string,
- - element of any allowing previous type.
+'NAME'::
+    An event record field named 'NAME'.
++
+The supported event record field types are:
++
+--
+* Integer
+* Enumeration (integral value)
+* Floating point number
+* Static array of integers
+* Dynamic array (``sequence'') of integers
+* Text string
+--
++
+Examples: `my_field`, `target_cpu`, `ip`.
 
-* The dynamic value of an event field is captured by using its name as a C
-  identifier.
+++$ctx.++__NAME__::
+    A statically-known context field named 'NAME'.
 +
-The square bracket notation is available, like in the C
-language, to access array/sequence field.
-Only a constant, positive integer number can be used within square
-brackets. If the index is out of bounds, the capture expression
-evaluates to `unavailable`.
+List the available statically-known context field names with
+man:lttng-add-context(1).
 +
-An enumeration field's value is an integer.
-+
-When the capture's field does not exist, the capture expression
-evaluates to `unavailable`.
-+
-Examples: `my_field`, `target_cpu`, `seq[7]`
-
-* The dynamic value of a statically-known context field is captured by
-  prefixing its name with `$ctx.`. See man:lttng-add-context(1) to get a list of
-  available contexts.
-+
-When the expression's statically-known context field does not exist,
-the capture expression evaluates to `unavailable`.
+NOTE: You do :not: need to add a context field with the `lttng
+add-context` command for it to be available to a capture descriptor
+expression.
 +
 Examples: `$ctx.prio`, `$ctx.preemptible`,
 `$ctx.perf:cpu:stalled-cycles-frontend`.
-+
-NOTE: The statically-known context field does NOT need to be added using the
-man:lttng-add-context(1) command. The statically-known context fields are
-always available in the context of triggers.
 
-* The dynamic value of an application-specific context field is captured by
-  prefixing its name with `$app.` (follows the format used to add such a context
-  field with the man:lttng-add-context(1) command).
+++$app.++__PROVIDER__++.++__NAME__::
+    An application-specific context field named 'NAME' within the
+    provider 'PROVIDER'.
 +
-When the expression's application-specific context field does not exist,
-the capture expression evaluates to `unavailable`.
+See man:lttng-add-context(1) to learn more about application-specific
+context fields.
++
+--
+NOTE: You do :not: need to add an application-specific context field
+with the `lttng add-context` command for it to be available to a capture
+descriptor expression.
+--
 +
 Example: `$app.server:cur_user`.
-+
-NOTE: The application-specific context field does NOT need to be added using the
-man:lttng-add-context(1) command. The application-specific context fields fields
-are always available in the context of triggers.
 
+__EXPR__++[++__INDEX__++]++::
+    The element at index 'INDEX' of the array field (static or dynamic)
+    identified by the expression 'EXPR'.
++
+'INDEX' must be a constant, positive integral value.
++
+Examples: `ip[3]`, `user_ids[15]`.
+
+If, when an event occurs, a given capture descriptor doesn't identify
+an existing event record or context field, then the captured value is
+reported as being unavailable. This applies to:
+
+* A nonexistent event record field name.
+* A nonexistent statically-known context field name.
+* A nonexistent application-specific context field name.
+* An out-of-bounds array field index.
+
+
+[[action-spec]]
+Action specifier
+~~~~~~~~~~~~~~~~
+Synopsis:
+
+[verse]
+option:--action='ATYPE' ['AARGS']
+
+An action specifier is the option:--action option, which specifies
+the type of action 'ATYPE', followed, depending on 'ATYPE', with zero
+or more arguments 'AARGS'.
+
+The available action types are:
+
+Notify::
+    Synopsis:
++
+[verse]
+option:--action=`notify`
++
+A `notify` action sends a notification through the notification
+mechanism of the session daemon (see man:lttng-session(8)).
++
+The session daemon sends details about the condition evaluation along
+with the notification.
++
+As of LTTng{nbsp}{lttng_version}, you can write a C/pass:[C++] program
+to receive LTTng notifications (see the liblttng-ctl C{nbsp}headers).
+
+Start a tracing session::
+    Synopsis:
++
+[verse]
+option:--action=`start-session` 'SESSION'
++
+A `start-session` action starts the tracing session named 'SESSION' like
+man:lttng-start(1) would.
++
+If no tracing session has the name 'SESSION' when the condition of the
+trigger is satisfied, the `start-session` action does nothing.
+
+Stop a tracing session::
+    Synopsis:
++
+[verse]
+option:--action=`stop-session` 'SESSION'
++
+A `stop-session` action stops the tracing session named 'SESSION' like
+man:lttng-stop(1) would.
++
+If no tracing session has the name 'SESSION' when the condition of the
+trigger is satisfied, the `stop-session` action does nothing.
+
+Rotate a tracing session::
+    Synopsis:
++
+[verse]
+option:--action=`rotate-session` 'SESSION'
++
+A `rotate-session` action rotates the tracing session named 'SESSION'
+(archives its current trace chunk) like man:lttng-rotate(1) would.
++
+If no tracing session has the name 'SESSION' when the condition of the
+trigger is satisfied, the `rotate-session` action does nothing.
+
+Take a tracing session snapshot::
+    Synopsis:
++
+[verse]
+option:--action=`snapshot-session` 'SESSION'
++
+A `snapshot-session` action takes a snapshot of the tracing session
+named 'SESSION' like man:lttng-snapshot(1) would.
++
+When the condition of the trigger is satisfied, the tracing session
+named 'SESSION', if any, must be a snapshot-mode tracing session
+(see man:lttng-create(1)).
++
+If no tracing session has the name 'SESSION' when the condition of the
+trigger is satisfied, the `rotate-session` action does nothing.
 
 OPTIONS
 -------
-
-option:--condition::
-    Define the condition for the trigger.  See the
-    <<conditions,CONDITIONS>> section for more details.
-
-option:--action::
-    Define an action for the trigger.  See the <<actions,ACTIONS>>
-    section for more details.
-
+Identification
+~~~~~~~~~~~~~~
 option:--id='ID'::
-    Set the id of the trigger to 'ID'.  If omitted, an id will
-    automatically be assigned to the trigger by the session daemon.
+    Set the unique ID of the trigger to add to 'ID' (a string) instead
+    of the `add-trigger` command automatically assigning one.
+
+option:--user-id='UID'::
+    Add the trigger as the Unix user having the user ID 'UID'.
 +
-If a trigger with the specified 'ID' already exists, the trigger
-creation will fail.
+You may only use this option if your Unix user is `root`.
 
-option:--fire-every 'N'::
-    Execute the trigger's actions every 'N' times the condition is met.
 
-option:--fire-once-after 'N'::
-    Execute the trigger's actions once after 'N' times the condition is
-    met, then never after that.
+Firing policy
+~~~~~~~~~~~~~
+option:--fire-every='N'::
+    Execute the actions of the trigger to add every 'N' times its
+    condition is satisfied instead of each time.
++
+You may not use this option with the option:--fire-once-after option.
+
+option:--fire-once-after='M'::
+    Execute the actions of the trigger to add _once_ after 'M' times
+    its condition has been satisfied, then never afterwards.
++
+You may not use this option with the option:--fire-every option.
+
+Specifier
+~~~~~~~~~
+option:--condition='CTYPE'::
+    Introductory option for a condition specifier of type 'CTYPE'.
++
+See the <<cond-spec,Condition specifier>> section above to learn more.
+
+option:--action='ATYPE'::
+    Introductory option for an action specifier of type 'ATYPE'.
++
+See the <<action-spec,Action specifier>> section above to learn more.
+
 
 include::common-cmd-help-options.txt[]
 
