@@ -1,6 +1,6 @@
 lttng-remove-trigger(1)
-========================
-:revdate: 20 January 2020
+=======================
+:revdate: 5 March 2021
 
 
 NAME
@@ -10,20 +10,33 @@ lttng-remove-trigger - Remove LTTng triggers
 
 SYNOPSIS
 --------
-
 [verse]
-*lttng* ['linkgenoptions:(GENERAL OPTIONS)'] *remove-trigger* 'ID'
+*lttng* ['linkgenoptions:(GENERAL OPTIONS)'] *remove-trigger* [option:--user-id='UID'] 'ID'
 
 
 DESCRIPTION
 -----------
+The `lttng remove-trigger` command removes the trigger with the ID 'ID'.
 
-The `lttng remove-trigger` command removes the trigger with the given
-'ID'.
+See man:lttng-add-trigger(1) to learn more about LTTng triggers.
+
+Use man:lttng-list-triggers(1) to list the available triggers and their
+IDs.
+
+With the `remove-trigger` command, you remove a trigger within the scope
+of your Unix user. If your Unix user is `root`, you can remove the
+trigger of another user with the option:--user-id option.
 
 
 OPTIONS
 -------
+Identification
+~~~~~~~~~~~~~~
+option:--user-id='UID'::
+    Remove the trigger of the Unix user having the user ID 'UID'.
++
+You may only use this option if your Unix user is `root`.
+
 
 include::common-cmd-help-options.txt[]
 
@@ -34,5 +47,5 @@ include::common-cmd-footer.txt[]
 SEE ALSO
 --------
 man:lttng-add-trigger(1),
-man:lttng-list-trigger(1),
+man:lttng-list-triggers(1),
 man:lttng(1)
