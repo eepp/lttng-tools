@@ -179,8 +179,8 @@ man:lttng-enable-channel(1)::
     {cmd_descr_enable_channel}.
 
 
-Event rules
-~~~~~~~~~~~
+Recording event rules
+~~~~~~~~~~~~~~~~~~~~~
 man:lttng-disable-event(1)::
     {cmd_descr_disable_event}.
 

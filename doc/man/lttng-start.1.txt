@@ -19,10 +19,10 @@ DESCRIPTION
 The `lttng start` command starts the various LTTng tracers for a
 given inactive tracing session.
 
-Starting the LTTng tracers has the effect that all enabled event rules
-within enabled channels can make their target event sources _emit_ trace
-events. Whether they are recorded to the local file system, sent over
-the network, or not recorded at all depends on the specific
+Starting the LTTng tracers has the effect that all enabled recording
+event rules within enabled channels can make their target event sources
+_emit_ trace events. Whether they are recorded to the local file system,
+sent over the network, or not recorded at all depends on the specific
 configuration of the tracing session in which tracing is started. See
 man:lttng-create(1) for different session modes.
 

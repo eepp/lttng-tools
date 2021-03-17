@@ -1230,7 +1230,7 @@ static int list_events(const char *channel_name)
 		}
 	} else {
 		/* Pretty print */
-		MSG("\n%sEvent rules:", indent4);
+		MSG("\n%sRecording event rules:", indent4);
 		if (count == 0) {
 			MSG("%sNone\n", indent6);
 			goto end;

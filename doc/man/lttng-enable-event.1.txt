@@ -5,12 +5,12 @@ lttng-enable-event(1)
 
 NAME
 ----
-lttng-enable-event - Create or enable LTTng event rules
+lttng-enable-event - Create or enable LTTng recording event rules
 
 
 SYNOPSIS
 --------
-Create or enable Linux kernel event rules:
+Create or enable Linux kernel recording event rules:
 
 [verse]
 *lttng* ['linkgenoptions:(GENERAL OPTIONS)'] *enable-event* option:--kernel
@@ -19,13 +19,13 @@ Create or enable Linux kernel event rules:
       [option:--filter='EXPR'] [option:--session='SESSION']
       [option:--channel='CHANNEL'] 'EVENT'[,'EVENT']...
 
-Create or enable an "all" Linux kernel event rule:
+Create or enable an "all" Linux kernel recording event rule:
 
 [verse]
 *lttng* ['linkgenoptions:(GENERAL OPTIONS)'] *enable-event* option:--kernel option:--all [option:--syscall]
       [option:--filter='EXPR'] [option:--session='SESSION'] [option:--channel='CHANNEL']
 
-Create or enable application/library event rules:
+Create or enable application/library recording event rules:
 
 [verse]
 *lttng* ['linkgenoptions:(GENERAL OPTIONS)'] *enable-event*
@@ -37,22 +37,23 @@ Create or enable application/library event rules:
 
 DESCRIPTION
 -----------
-The `lttng enable-event` command can create a new event rule, or enable
-one or more existing and disabled ones.
+The `lttng enable-event` command can create a new recording event rule,
+or enable one or more existing and disabled ones.
 
-An event rule created by `lttng enable-event` is a set of conditions
-that must be satisfied in order for an actual event to be emitted by an
-LTTng tracer when the execution of an application or a library or the
-Linux kernel reaches an event source (tracepoint, system call, dynamic
-probe). Event sources can be listed with the man:lttng-list(1) command.
+A recording event rule created by `lttng enable-event` is a set of
+conditions that must be satisfied in order for an actual event to be
+emitted by an LTTng tracer when the execution of an application or a
+library or the Linux kernel reaches an event source (tracepoint, system
+call, dynamic probe). Event sources can be listed with the
+man:lttng-list(1) command.
 
 The man:lttng-disable-event(1) command can be used to disable
-existing event rules.
+existing recording event rules.
 
-Event rules are always assigned to a channel when they are created. If
-the option:--channel option is omitted, a default channel named
-`channel0` is used (and created automatically if it does not exist for
-the specified domain in the selected tracing session).
+Recording event rules are always assigned to a channel when they are
+created. If the option:--channel option is omitted, a default channel
+named `channel0` is used (and created automatically if it does not exist
+for the specified domain in the selected tracing session).
 
 If the option:--session option is omitted, the chosen channel is picked
 from the current tracing session.
@@ -104,13 +105,13 @@ In the cases of the JUL, Apache log4j, and Python domains, the event
 names correspond to _logger_ names.
 
 
-Understanding event rule conditions
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-When creating an event rule with `lttng enable-event`, conditions are
-specified using options. The logical conjunction (logical AND) of all
-those conditions must be true when an event source is reached by an
-application or by the Linux kernel in order for an actual event
-to be emitted by an LTTng tracer.
+Understanding recording event rule conditions
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+When creating a recording event rule with `lttng enable-event`,
+conditions are specified using options. The logical conjunction (logical
+AND) of all those conditions must be true when an event source is
+reached by an application or by the Linux kernel in order for an actual
+event to be emitted by an LTTng tracer.
 
 Any condition that is not explicitly specified on creation is considered
 a _don't care_.
@@ -123,18 +124,18 @@ $ lttng enable-event --userspace hello:world
 $ lttng enable-event --userspace hello:world --loglevel=TRACE_INFO
 ----
 
-Here, two event rules are created. The first one has a single condition:
-the tracepoint name must match `hello:world`. The second one has two
-conditions:
+Here, two recording event rules are created. The first one has a single
+condition: the tracepoint name must match `hello:world`. The second one
+has two conditions:
 
 * The tracepoint name must match `hello:world`, _and_
 * The tracepoint's defined log level must be at least as severe as
   the `TRACE_INFO` level.
 
-In this case, the second event rule is pointless because the first one
-is more general: it does not care about the tracepoint's log level.
-If an event source matching both event rules is reached by the
-application's execution, only one event is emitted.
+In this case, the second recording event rule is pointless because the
+first one is more general: it does not care about the tracepoint's log
+level. If an event source matching both recording event rules is reached
+by the application's execution, only one event is emitted.
 
 The available conditions for the Linux kernel domain are:
 
@@ -159,9 +160,9 @@ The available conditions for the application domains are:
 +
 You can use `*` characters at any place in the tracepoint name as
 wildcards to match zero or more characters. To use a literal `*`
-character, use :escwc:. When you create an event rule with a tracepoint
-name containing a wildcard, you can exclude specific tracepoint names
-from the match with the option:--exclude option.
+character, use :escwc:. When you create a recording event rule with a
+tracepoint name containing a wildcard, you can exclude specific
+tracepoint names from the match with the option:--exclude option.
 
 * Filter expression (option:--filter option) executed against the
   dynamic values of event fields at execution time that must evaluate
@@ -172,14 +173,14 @@ from the match with the option:--exclude option.
   level (option:--loglevel-only option).
 
 When using `lttng enable-event` with a set of conditions that does not
-currently exist for the chosen tracing session, domain, and channel,
-a new event rule is created. Otherwise, the existing event rule is
-enabled if it is currently disabled
-(see man:lttng-disable-event(1)).
+currently exist for the chosen tracing session, domain, and channel, a
+new recording event rule is created. Otherwise, the existing recording
+event rule is enabled if it is currently disabled (see
+man:lttng-disable-event(1)).
 
-The option:--all option can be used alongside the option:--tracepoint
-or option:--syscall options. When this option is used, no 'EVENT'
-argument must be specified. This option defines a single event rule
+The option:--all option can be used alongside the option:--tracepoint or
+option:--syscall options. When this option is used, no 'EVENT' argument
+must be specified. This option defines a single recording event rule
 matching _all_ the possible events of a given tracing domain for the
 chosen channel and tracing session. It is the equivalent of an 'EVENT'
 argument named `*` (wildcard).
@@ -189,9 +190,9 @@ argument named `*` (wildcard).
 Filter expression
 ~~~~~~~~~~~~~~~~~
 A filter expression can be specified with the option:--filter option
-when creating a new event rule. If the filter expression evaluates
-to true when executed against the dynamic values of an event's fields
-when tracing, the filtering condition passes.
+when creating a new recording event rule. If the filter expression
+evaluates to true when executed against the dynamic values of an event's
+fields when tracing, the filtering condition passes.
 
 NOTE: Make sure to **single-quote** the filter expression when running
 the command from a shell, as filter expressions typically include
@@ -342,7 +343,8 @@ eax_reg & 0xff7 == 0x240 && x[4] >> 12 <= 0x1234
 Log levels
 ~~~~~~~~~~
 Tracepoints and log statements in applications have an attached log
-level. Application event rules can contain a _log level_ condition.
+level. Application recording event rules can contain a _log level_
+condition.
 
 With the option:--loglevel option, the event source's log level must
 be at least as severe as the option's argument. With the
@@ -432,31 +434,31 @@ Domain
 One of:
 
 option:-j, option:--jul::
-    Create or enable event rules in the `java.util.logging`
+    Create or enable recording event rules in the `java.util.logging`
     (JUL) domain.
 
 option:-k, option:--kernel::
-    Create or enable event rules in the Linux kernel domain.
+    Create or enable recording event rules in the Linux kernel domain.
 
 option:-l, option:--log4j::
-    Create or enable event rules in the Apache log4j domain.
+    Create or enable recording event rules in the Apache log4j domain.
 
 option:-p, option:--python::
-    Create or enable event rules in the Python domain.
+    Create or enable recording event rules in the Python domain.
 
 option:-u, option:--userspace::
-    Create or enable event rules in the user space domain.
+    Create or enable recording event rules in the user space domain.
 
 
 Target
 ~~~~~~
 option:-c 'CHANNEL', option:--channel='CHANNEL'::
-    Create or enable event rules in the channel named 'CHANNEL' instead
-    of the default channel name `channel0`.
+    Create or enable recording event rules in the channel named
+    'CHANNEL' instead of the default channel name `channel0`.
 
 option:-s 'SESSION', option:--session='SESSION'::
-    Create or enable event rules in the tracing session named 'SESSION'
-    instead of the current tracing session.
+    Create or enable recording event rules in the tracing session named
+    'SESSION' instead of the current tracing session.
 
 
 Event source type
@@ -566,14 +568,14 @@ Log level
 One of:
 
 option:--loglevel='LOGLEVEL'::
-    Add log level condition to the event rule: the event source's
-    defined log level must be at least as severe as 'LOGLEVEL'.
+    Add log level condition to the recording event rule: the event
+    source's defined log level must be at least as severe as 'LOGLEVEL'.
     See the <<log-levels,Log levels>> section above for the available
     log levels. Only available with application domains.
 
 option:--loglevel-only='LOGLEVEL'::
-    Add log level condition to the event rule: the event source's
-    defined log level must match 'LOGLEVEL'. See the
+    Add log level condition to the recording event rule: the event
+    source's defined log level must match 'LOGLEVEL'. See the
     <<log-levels,Log levels>> section above for the available log
     levels. Only available with application domains.
 
@@ -581,18 +583,17 @@ option:--loglevel-only='LOGLEVEL'::
 Filtering and exclusion
 ~~~~~~~~~~~~~~~~~~~~~~~
 option:-x 'EVENT'[,'EVENT']..., option:--exclude='EVENT'[,'EVENT']...::
-    Exclude events named 'EVENT' from the event rule. This option
-    can be used when the command's 'EVENT' argument contains at least
-    one wildcard star (`*`) to exclude specific names. 'EVENT' can also
-    contain wildcard stars. To use a
-    literal `,` character, use :esccomma:.
-    Only available with the option:--userspace domain.
+    Exclude events named 'EVENT' from the recording event rule. This
+    option can be used when the command's 'EVENT' argument contains at
+    least one wildcard star (`*`) to exclude specific names. 'EVENT' can
+    also contain wildcard stars. To use a literal `,` character, use
+    :esccomma:. Only available with the option:--userspace domain.
 
 option:-f 'EXPR', option:--filter='EXPR'::
-    Add filter expression condition to the event rule. Expression 'EXPR'
-    must evaluate to true when executed against the dynamic values of
-    event fields. See the <<filter-expr,Filter expression>>
-    section above for more information.
+    Add filter expression condition to the recording event rule.
+    Expression 'EXPR' must evaluate to true when executed against the
+    dynamic values of event fields. See the <<filter-expr,Filter
+    expression>> section above for more information.
 
 
 Shortcuts

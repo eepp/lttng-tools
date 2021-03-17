@@ -39,9 +39,9 @@ DESCRIPTION
 The `lttng create` command creates a new tracing session.
 
 A tracing session is a named container of channels, which in turn
-contain event rules. It is domain-agnostic, in that channels and event
-rules can be enabled for the user space tracer and/or the Linux
-kernel tracer.
+contain recording event rules. It is domain-agnostic, in that channels
+and recording event rules can be enabled for the user space tracer
+and/or the Linux kernel tracer.
 
 On execution, an `.lttngrc` file is created, if it does not exist, in the
 user's home directory. This file contains the name of the current tracing
