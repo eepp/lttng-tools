@@ -159,6 +159,7 @@ health_check
 # man pages
 /doc/man/*.1
 /doc/man/*.3
+/doc/man/*.7
 /doc/man/*.8
 /doc/man/*.xml
 /doc/man/*.html

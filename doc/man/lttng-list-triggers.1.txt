@@ -17,7 +17,7 @@ SYNOPSIS
 DESCRIPTION
 -----------
 The `lttng list-triggers` command lists the available LTTng triggers
-and their properties.
+of your Unix user and their properties.
 
 See man:lttng-add-trigger(1) to learn more about triggers.
 
