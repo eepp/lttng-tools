@@ -1,11 +1,11 @@
 lttng-enable-rotation(1)
 ========================
-:revdate: 21 April 2021
+:revdate: 29 April 2021
 
 
 NAME
 ----
-lttng-enable-rotation - Set a tracing session rotation schedule
+lttng-enable-rotation - Set an LTTng tracing session rotation schedule
 
 
 SYNOPSIS
@@ -24,12 +24,11 @@ With the option:--session='SESSION' option::
     The tracing session named 'SESSION'.
 
 Without the option:--session option::
-    The current tracing session (see man:lttng-create(1) and
-    man:lttng-set-session(1) to learn more about the current tracing
-    session).
+    The current tracing session (see man:lttng-concepts(7) to learn more
+    about the current tracing session).
 
-See man:lttng-rotate(1) for more information about the concepts of a
-tracing session _rotation_ and a _trace chunk_.
+See man:lttng-concepts(7) to learn more about the tracing session
+rotation and trace chunk concepts.
 
 With the option:--timer='PERIODUS' option, the `enable-rotation` command
 sets a rotation schedule so that LTTng performs an automatic rotation at
@@ -58,16 +57,15 @@ relies on the precision of the platform implementation of POSIX timers.
 
 You may combine the option:--timer and option:--size options.
 
-The naming convention of a trace chunk archive which an automatic
-rotation operation creates is the same as with the immediate rotation
-command, man:lttng-rotate(1).
+See the man:lttng-concepts(7) to learn
+how LTTng names a trace chunk archive directory.
 
 Unset a tracing session rotation schedule with the
 man:lttng-disable-rotation(1) command.
 
 [IMPORTANT]
 ====
-The `enable-rotation` command only works when:
+You may only use the `enable-rotation` command when:
 
 * The selected tracing session was created in normal mode or in network
   streaming mode (see man:lttng-create(1)).
@@ -95,8 +93,8 @@ The `k`{nbsp}(KiB), `M`{nbsp}(MiB), and `G`{nbsp}(GiB) suffixes are
 supported.
 
 option:--timer='PERIODUS'::
-    Set a rotation schedule so that LTTng performs an automatic rotation at
-    least every 'PERIODUS' microseconds.
+    Set a rotation schedule so that LTTng performs an automatic rotation
+    approximately every 'PERIODUS' microseconds.
 +
 The `ms`{nbsp}(milliseconds), `s`{nbsp}(seconds), `m`{nbsp}(minutes),
 and `h`{nbsp}(hours) suffixes are supported.
@@ -118,6 +116,7 @@ include::common-cmd-footer.txt[]
 SEE ALSO
 --------
 man:lttng(1),
+man:lttng-concepts(7),
 man:lttng-create(1),
 man:lttng-disable-rotation(1),
 man:lttng-rotate(1)

@@ -1,6 +1,6 @@
 lttng-add-context(1)
 ====================
-:revdate: 8 April 2021
+:revdate: 29 April 2021
 
 
 NAME
@@ -31,16 +31,15 @@ The `lttng add-context` command adds one or more context fields to be
 recorded to the event records of a given channel, or of all the channels
 of a selected tracing session, by LTTng.
 
-See man:lttng-enable-channel(1) to learn more about LTTng channels.
+See man:lttng-concepts(7) to learn more about LTTng channels.
 
 When you use the `add-context` command to add context fields for a given
 channel, all the event records which LTTng writes to a sub-buffer of
 that channel contain the dynamic values of those context fields.
 
 Without the option:--session option, the `add-context` command selects
-the current tracing session (see man:lttng-create(1) and
-man:lttng-set-session(1) to learn more about the current tracing
-session).
+the current tracing session (see man:lttng-concepts(7) to learn more
+about the current tracing session).
 
 Without the option:--channel option, LTTng adds context fields to be
 recorded to the event records of *all* the channels of the selected
@@ -160,5 +159,6 @@ include::common-cmd-footer.txt[]
 SEE ALSO
 --------
 man:lttng(1),
+man:lttng-concepts(7),
 man:lttng-enable-channel(1),
 man:lttng-set-session(1)

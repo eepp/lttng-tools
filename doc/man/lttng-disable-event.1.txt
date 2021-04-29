@@ -1,6 +1,6 @@
 lttng-disable-event(1)
 ======================
-:revdate: 21 April 2021
+:revdate: 29 April 2021
 
 
 NAME
@@ -35,6 +35,8 @@ The `lttng disable-event` command disables one or more enabled recording
 event rules previously created with the man:lttng-enable-event(1)
 command.
 
+See man:lttng-concepts(7) to learn more about recording event rules.
+
 As of LTTng{nbsp}{lttng_version}, the `disable-event` command can only
 find recording event rules to disable by their instrumentation point
 type and event name conditions. Therefore, you cannot disable recording
@@ -54,9 +56,8 @@ Without the option:--channel option, the `disable-event` command selects
 the channel named `channel0`.
 
 Without the option:--session option, the `disable-event` command selects
-the current tracing session (see man:lttng-create(1) and
-man:lttng-set-session(1) to learn more about the current tracing
-session).
+the current tracing session (see man:lttng-concepts(7) to learn more
+about the current tracing session).
 
 You may disable an enabled recording event rule regardless of the
 activity (started or stopped) of its tracing session (see
@@ -149,5 +150,6 @@ include::common-cmd-footer.txt[]
 SEE ALSO
 --------
 man:lttng(1),
+man:lttng-concepts(7),
 man:lttng-enable-event(1),
 man:lttng-list(1)

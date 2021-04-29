@@ -1,6 +1,6 @@
 lttng-create(1)
 ===============
-:revdate: 8 April 2021
+:revdate: 29 April 2021
 
 
 NAME
@@ -36,33 +36,12 @@ Create a live mode tracing session:
 
 DESCRIPTION
 -----------
-The `lttng create` command creates a new tracing session for your Unix
-user.
+The `lttng create` command creates a new tracing session for the
+connected session daemon (see the ``Session daemon connection'' section
+of man:lttng(1) to learn how a user application connects to a session
+daemon).
 
-A tracing session is a stateful dialogue between you and a
-session daemon (see man:lttng-sessiond(8)) for everything related to
-event recording.
-
-Everything that you do when you control LTTng tracers to record events
-happens within a tracing session. In particular, a tracing session:
-
-* Has its own name.
-
-* Has its own set of trace files, if any.
-
-* Has its own state of activity (started or stopped).
-
-* Has its own mode (local, network streaming,
-  snapshot, or live).
-+
-See the <<modes,Tracing session modes>> section below to learn more.
-
-* Has its own channels (see man:lttng-enable-channel(1)) to which are
-  attached their own recording event rules (see
-  man:lttng-enable-event(1)).
-
-* Has its own process attribute tracking inclusion sets (see
-  man:lttng-track(1)).
+See man:lttng-concepts(7) to learn more about tracing sessions.
 
 Without the 'SESSION' argument, LTTng automatically generates a tracing
 session name having the ++auto-++__YYYYmmdd__++-++__HHMMSS__ form, where
@@ -81,8 +60,14 @@ the session daemon binary to spawn with the general
 genoption:--sessiond-path option. Avoid automatically spawning a session
 daemon with the general genoption:--no-sessiond option.
 
-List the tracing sessions of your Unix user with the man:lttng-list(1)
+On success, the `create` command sets the current tracing session (see
+man:lttng-concepts(7) to learn more) to the created tracing session.
+
+Show the status of the current tracing session with the man:lttng-status(1)
 command.
+
+List the existing tracing sessions of the connected session daemon with
+the man:lttng-list(1) command.
 
 Start and stop a tracing session with the man:lttng-start(1) and
 man:lttng-stop(1) commands.
@@ -90,56 +75,17 @@ man:lttng-stop(1) commands.
 Save and load a tracing session with the man:lttng-save(1) and
 man:lttng-load(1) commands.
 
-Archive the current trace chunk (rotate) a tracing session with the
+Archive the current trace chunk of (rotate) a tracing session with the
 man:lttng-rotate(1) command.
 
 Destroy a tracing session with the man:lttng-destroy(1) command.
 
 
-Current tracing session
-~~~~~~~~~~~~~~~~~~~~~~~
-When you run the `create` command, LTTng creates the
-`$LTTNG_HOME/.lttngrc` file if it doesn't exist (`$LTTNG_HOME` defaults
-to `$HOME`).
-
-`$LTTNG_HOME/.lttngrc` contains the name of the _current tracing
-session_.
-
-When you create a new tracing session with the `create` command, LTTng
-updates the current tracing session.
-
-The following man:lttng(1) commands select the current tracing session
-if you don't specify one:
-
-* man:lttng-add-context(1)
-* man:lttng-clear(1)
-* man:lttng-destroy(1)
-* man:lttng-disable-channel(1)
-* man:lttng-disable-event(1)
-* man:lttng-disable-rotation(1)
-* man:lttng-enable-channel(1)
-* man:lttng-enable-event(1)
-* man:lttng-enable-rotation(1)
-* man:lttng-regenerate(1)
-* man:lttng-rotate(1)
-* man:lttng-save(1)
-* man:lttng-snapshot(1)
-* man:lttng-start(1)
-* man:lttng-status(1)
-* man:lttng-stop(1)
-* man:lttng-track(1)
-* man:lttng-untrack(1)
-* man:lttng-view(1)
-
-Set the current tracing session manually with the
-man:lttng-set-session(1) command, without having to edit the `.lttngrc`
-file.
-
-
 [[modes]]
 Tracing session modes
 ~~~~~~~~~~~~~~~~~~~~~
-LTTng offers four tracing session modes:
+As documented in man:lttng-concepts(7), LTTng offers four tracing
+session modes:
 
 [[local-mode]]Local mode::
     Write the trace data to the local file system.
@@ -173,14 +119,6 @@ with the option:--ctrl-url and option:--data-url options (see the
 LTTng automatically configures the channels of such a tracing session to
 be snapshot-ready on creation (see man:lttng-enable-channel(1)).
 +
-LTTng takes a snapshot of such a tracing session when:
-+
---
-* You run the man:lttng-snapshot(1) command.
-* LTTng executes a `snapshot-session` trigger action (see
-  man:lttng-add-trigger(1)).
---
-+
 Set the default snapshot output destination with the
 option:--set-url option, or with the option:--ctrl-url and
 option:--data-url options (see the <<url-format,URL format>> section
@@ -199,10 +137,10 @@ with `file://`.
 [[url-format]]
 URL format
 ~~~~~~~~~~
-The argument of the option:--set-url, option:--ctrl-url, and
-option:--data-url options is an URL.
+The argument of the option:--set-url='URL', option:--ctrl-url='URL', and
+option:--data-url='URL' options is an URL.
 
-There are two available URL formats.
+There are two available 'URL' formats.
 
 Local format::
 +
@@ -261,9 +199,10 @@ option:--data-url options together.
 --
 +
 ('HOST' | 'IPADDR'):::
-    Hostname or IP address (IPv6 address *must* be enclosed in square
-    brackets (`[` and{nbsp}`]`); see
-    https://www.ietf.org/rfc/rfc2732.txt[RFC{nbsp}2732]).
+    Hostname or IP address.
++
+IPv6 address must be enclosed in square brackets (`[` and{nbsp}`]`);
+see https://www.ietf.org/rfc/rfc2732.txt[RFC{nbsp}2732].
 
 'CTRLPORT':::
     Control TCP port.
@@ -363,6 +302,7 @@ include::common-cmd-footer.txt[]
 SEE ALSO
 --------
 man:lttng(1),
+man:lttng-concepts(7),
 man:lttng-destroy(1),
 man:lttng-enable-channel(1),
 man:lttng-relayd(8),
