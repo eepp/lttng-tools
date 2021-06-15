@@ -89,20 +89,65 @@ struct lttng_calibrate {
 	char padding[LTTNG_CALIBRATE_PADDING1];
 };
 
-/*
- * Check if a session daemon is alive.
- *
- * Return 1 if alive or 0 if not. On error, returns a negative negative LTTng
- * error code.
- */
+/*!
+@brief
+    Returns whether or not liblttng-ctl is able to connect to a
+    listening session daemon.
+
+@ingroup api_gen
+
+How this function tries to connect to a session daemon depends on the
+current Unix tracing group (initially \c tracing) of the library. Set
+the tracing group with lttng_set_tracing_group(). See \ref
+api-gen-sessiond-conn "Session daemon connection" to learn more.
+
+@returns
+    @parblock
+    One of:
+
+    <dl>
+      <dt>1</dt>
+      <dd>
+        liblttng-ctl is able to connect to a session daemon.
+
+      <dt>0
+      <dd>
+        liblttng-ctl isn't able to connect to a session daemon.
+
+      <dt>Negative value
+      <dd>
+        Error: a negative #lttng_error_code enumerator.
+    </dl>
+    @endparblock
+
+@sa lttng_set_tracing_group() --
+    Sets the current Unix tracing group of liblttng-ctl.
+*/
 extern int lttng_session_daemon_alive(void);
 
-/*
- * Set the tracing group for the *current* flow of execution.
- *
- * On success, returns 0 else a negative LTTng error code.
- */
-extern int lttng_set_tracing_group(const char *name);
+/*!
+@brief
+    Sets the current Unix tracing group of liblttng-ctl to \lt_p{group}.
+
+@ingroup api_gen
+
+How the liblttng-ctl functions connect to a session daemon depends on
+the current Unix tracing group (initially \c tracing) of the library.
+See \ref api-gen-sessiond-conn "Session daemon connection" to learn
+more.
+
+@param[in] group
+    New Unix tracing group of liblttng-ctl.
+
+@returns
+    0 on success, or a \em negative #lttng_error_code enumerator
+    otherwise.
+
+@lt_pre_not_null{group}
+@pre
+    \lt_p{group} names an existing Unix group.
+*/
+extern int lttng_set_tracing_group(const char *group);
 
 /*
  * This call registers an "outside consumer" for a session and an lttng domain.
